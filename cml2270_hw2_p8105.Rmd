@@ -16,7 +16,9 @@ getwd()
 
 ```{r import and clean trash}
 
-read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx")
+mrtrash_df = read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+           sheet = "Mr. Trash Wheel",
+           range = "A2:N408") %>%
+ 
 
 ```
-
