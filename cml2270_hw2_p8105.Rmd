@@ -1,0 +1,22 @@
+---
+title: "C.Lucey P8105 Homework 2 Data Wrangling"
+output: html_document
+---
+## Setup
+Only done once, the setup code loads the necessary libraries and double checks that the working directory is correct.
+
+```{r setup, eval = FALSE}
+library(tidyverse)
+library(readxl)
+getwd()
+```
+# Problem 1: Mr. Trash Wheel
+
+## Importing and Cleaning the Mr. Trash Wheel Dataset
+
+```{r import and clean trash}
+
+read_excel("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx")
+
+```
+
