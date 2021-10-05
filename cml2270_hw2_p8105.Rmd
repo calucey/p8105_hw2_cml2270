@@ -94,3 +94,16 @@ unemploy_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
 pols_snp_join = inner_join(unemploy_df, pols_df, by = "year", "month")
 ```
 
+# Problem 3: Baby Names
+
+```{r import and tidy babynames}
+
+babyname_df = read_csv("data/Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  distinct(.keep_all = TRUE) %>% 
+  mutate(ethnicity = str_to_lower(ethnicity)) %>% 
+  mutate(gender = str_to_lower(gender)) %>% 
+  mutate(childs_first_name = str_to_lower(childs_first_name))
+
+```
+
