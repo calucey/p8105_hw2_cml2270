@@ -66,18 +66,31 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   mutate(president = 
           ifelse(prez_dem == 1, "dem","gop")) %>% 
-  select(-prez_dem, -prez_gop, -day)
+  select(-prez_dem, -prez_gop, -day) %>% 
+  mutate(year = as.numeric(year))
 
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
   separate(date, into = c("month", "day", "year")) %>% 
   mutate(month = month.name[as.numeric(month)]) %>% 
   select(-day) %>% 
-  relocate(year)
+  relocate(year) %>% 
+  mutate(year = as.numeric(year))
   
 ```
 
-```{r}
+```{r tidying unemployment data}
 
+unemploy_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemployment_rate") %>% 
+  mutate(year = as.numeric(year))
 ```
 
+```{r joining pols and snp}
+
+pols_snp_join = inner_join(unemploy_df, pols_df, by = "year", "month")
+```
 
