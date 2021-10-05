@@ -14,15 +14,43 @@ getwd()
 
 ## Importing and Cleaning the Mr. Trash Wheel Dataset
 
-```{r import and clean trash}
+```{r import and clean trash man data}
 
 mrtrash_df = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
            sheet = "Mr. Trash Wheel",
            range = "A2:N408",
-           col_names = TRUE,
+           col_names = TRUE
            ) %>%
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls = round(sports_balls, 0))
 
 ```
+
+## Importing and Cleaning Precipitaiotn Data for 2018 and 2019
+
+```{r import and read precipitation data}
+rain_2018 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+          sheet = "2018 Precipitation",
+          range = "A2:B14",
+          col_names = TRUE
+          ) %>% 
+  janitor::clean_names() %>% 
+  mutate(year = 2018) %>% 
+  mutate(month_name = month.name[month])
+
+rain_2019 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+          sheet = "2019 Precipitation",
+          range = "A2:B14",
+          col_names = TRUE
+          ) %>%
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year = 2019) %>% 
+  mutate(month_name = month.name[month])
+
+annualrain_df = bind_rows(rain_2018, rain_2019) 
+
+```
+
+## DESCRIPTION OF THESE DATA 
