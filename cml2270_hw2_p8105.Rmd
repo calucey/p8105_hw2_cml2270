@@ -37,7 +37,7 @@ rain_2018 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
           ) %>% 
   janitor::clean_names() %>% 
   mutate(year = 2018) %>% 
-  mutate(month_name = month.name[month])
+  mutate(month = month.name[as.numeric(month)])
 
 rain_2019 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
           sheet = "2019 Precipitation",
@@ -47,10 +47,37 @@ rain_2019 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   janitor::clean_names() %>% 
   drop_na() %>% 
   mutate(year = 2019) %>% 
-  mutate(month_name = month.name[month])
+  mutate(month = month.name[as.numeric(month)])
 
-annualrain_df = bind_rows(rain_2018, rain_2019) 
+annualrain_df = bind_rows(rain_2018, rain_2019)
 
 ```
 
 ## DESCRIPTION OF THESE DATA 
+
+DONT FORGET TO GO BACK AND CHANGE THE NAME OF THE TOTAL PRECIPITAITON COLUMN
+
+# Problem 2: FiveThirtyEight
+
+```{r import pols_month and snp data}
+
+pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(mon, into = c("year", "month", "day")) %>%
+  mutate(month = month.name[as.numeric(month)]) %>% 
+  mutate(president = 
+          ifelse(prez_dem == 1, "dem","gop")) %>% 
+  select(-prez_dem, -prez_gop, -day)
+
+snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
+  separate(date, into = c("month", "day", "year")) %>% 
+  mutate(month = month.name[as.numeric(month)]) %>% 
+  select(-day) %>% 
+  relocate(year)
+  
+```
+
+```{r}
+
+```
+
+
