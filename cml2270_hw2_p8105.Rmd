@@ -77,7 +77,8 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   mutate(year = ifelse(68 > year %% 100 & 16 > year %% 100, 2000 + year %% 100, 1900 + year %% 100)) %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   select(-day) %>% 
-  relocate(year)
+  relocate(year) %>% 
+  rename(snp_close = close)
 ```
 
 ```{r tidying unemployment data}
