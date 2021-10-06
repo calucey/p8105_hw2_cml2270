@@ -1,5 +1,7 @@
 ---
-title: "C.Lucey P8105 Homework 2: Data Wrangling"
+title: "P8105 Homework 2: Data Wrangling"
+author: "Catherine Lucey (UNI: cml2270)"
+date: 10/10/21
 output: html_document
 ---
 ## Setup
@@ -16,7 +18,6 @@ getwd()
 ## Importing and Cleaning the Mr. Trash Wheel Dataset
 
 ```{r import and clean trash man data}
-
 mrtrash_df = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
            sheet = "Mr. Trash Wheel",
            range = "A2:N408",
@@ -25,7 +26,6 @@ mrtrash_df = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
   mutate(sports_balls = round(sports_balls, 0))
-
 ```
 
 ## Importing and Cleaning Precipitaiotn Data for 2018 and 2019
@@ -38,7 +38,8 @@ rain_2018 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
           ) %>% 
   janitor::clean_names() %>% 
   mutate(year = 2018) %>% 
-  mutate(month = month.name[as.numeric(month)])
+  mutate(month = month.name[as.numeric(month)]) %>% 
+  rename(total_precip = total)
 
 rain_2019 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
           sheet = "2019 Precipitation",
@@ -48,26 +49,25 @@ rain_2019 = read_xlsx("data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   janitor::clean_names() %>% 
   drop_na() %>% 
   mutate(year = 2019) %>% 
-  mutate(month = month.name[as.numeric(month)])
+  mutate(month = month.name[as.numeric(month)]) %>% 
+  rename(total_precip = total)
 
 annualrain_df = bind_rows(rain_2018, rain_2019)
-
 ```
 
-## DESCRIPTION OF THESE DATA 
+## Describing Mr. Trash Wheel and Precipitation Data 
 
 DONT FORGET TO GO BACK AND CHANGE THE NAME OF THE TOTAL PRECIPITAITON COLUMN
 
 # Problem 2: FiveThirtyEight
 
 ```{r import pols_month and snp data}
-
 pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>% 
   separate(mon, into = c("year", "month", "day")) %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   mutate(president = 
           ifelse(prez_dem == 1, "dem","gop")) %>% 
-  select(-prez_dem, -prez_gop, -day) #%>% 
+  select(-prez_dem, -prez_gop, -day) %>% 
   mutate(year = as.numeric(year))
 
 snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
@@ -78,19 +78,6 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   select(-day) %>% 
   relocate(year)
-  
-
-#mutate(year = as.numeric(year)) %>%
-  #mutate(function(x, year=1968) 
- # m = year(x) %% 100,
-  #year(x) = ifelse(m > year %% 100, 1900 + m, 2000 + m))
-  
-
-#YEAR DATES ARE WRONG
-
-  #mutate(m = "year", %% 100, year = ifelse(m > year %% 100, 1900 + m, 2000 + m)) %>%
-
-
 ```
 
 ```{r tidying unemployment data}
@@ -104,9 +91,11 @@ unemploy_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
   mutate(month = recode(month, jan = "January", feb = "February", mar = "March", apr = "April", may = "May", jun = "June", jul = "July", aug = "August", sep = "September", oct = "October", nov = "November", dec = "December" ))
 ```
 
-```{r joining pols and snp}
+```{r joining all three datasets}
 
-pols_snp_join = inner_join(snp_df, pols_df, by = c("year", "month"))
+unemp_pols_snp_join = inner_join(snp_df, pols_df, by = c("year", "month")) %>% 
+  inner_join(unemploy_df, by = c("year", "month"))
+
 ```
 
 # Problem 3: Baby Names
