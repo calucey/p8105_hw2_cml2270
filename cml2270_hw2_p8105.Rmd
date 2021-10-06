@@ -1,13 +1,14 @@
 ---
-title: "C.Lucey P8105 Homework 2 Data Wrangling"
+title: "C.Lucey P8105 Homework 2: Data Wrangling"
 output: html_document
 ---
 ## Setup
 Only done once, the setup code loads the necessary libraries and double checks that the working directory is correct.
 
-```{r setup, eval = FALSE}
+```{r setup}
 library(tidyverse)
 library(readxl)
+library(lubridate)
 getwd()
 ```
 # Problem 1: Mr. Trash Wheel
@@ -66,16 +67,30 @@ pols_df = read_csv("data/fivethirtyeight_datasets/pols-month.csv") %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   mutate(president = 
           ifelse(prez_dem == 1, "dem","gop")) %>% 
-  select(-prez_dem, -prez_gop, -day) %>% 
+  select(-prez_dem, -prez_gop, -day) #%>% 
   mutate(year = as.numeric(year))
 
-snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>% 
-  separate(date, into = c("month", "day", "year")) %>% 
+snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
+  mutate(date = mdy(date)) %>%
+  separate(date, into = c("year","month", "day")) %>%
+  mutate(year = as.numeric(year)) %>% 
+  mutate(year = ifelse(68 > year %% 100 & 16 > year %% 100, 2000 + year %% 100, 1900 + year %% 100)) %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   select(-day) %>% 
-  relocate(year) %>% 
-  mutate(year = as.numeric(year))
+  relocate(year)
   
+
+#mutate(year = as.numeric(year)) %>%
+  #mutate(function(x, year=1968) 
+ # m = year(x) %% 100,
+  #year(x) = ifelse(m > year %% 100, 1900 + m, 2000 + m))
+  
+
+#YEAR DATES ARE WRONG
+
+  #mutate(m = "year", %% 100, year = ifelse(m > year %% 100, 1900 + m, 2000 + m)) %>%
+
+
 ```
 
 ```{r tidying unemployment data}
@@ -86,12 +101,12 @@ unemploy_df = read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>%
     jan:dec,
     names_to = "month",
     values_to = "unemployment_rate") %>% 
-  mutate(year = as.numeric(year))
+  mutate(month = recode(month, jan = "January", feb = "February", mar = "March", apr = "April", may = "May", jun = "June", jul = "July", aug = "August", sep = "September", oct = "October", nov = "November", dec = "December" ))
 ```
 
 ```{r joining pols and snp}
 
-pols_snp_join = inner_join(unemploy_df, pols_df, by = "year", "month")
+pols_snp_join = inner_join(snp_df, pols_df, by = c("year", "month"))
 ```
 
 # Problem 3: Baby Names
