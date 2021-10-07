@@ -57,7 +57,12 @@ annualrain_df = bind_rows(rain_2018, rain_2019)
 
 ## Describing Mr. Trash Wheel and Precipitation Data 
 
-DONT FORGET TO GO BACK AND CHANGE THE NAME OF THE TOTAL PRECIPITAITON COLUMN
+The Mr. Trash Wheel dataset provides information on how much trash the Mr. Trash Wheel trash collector picked up from `r min(pull(mrtrash_df, "date"))` to `r max(pull(mrtrash_df, "date"))` in the Baltimore Harbor. The Mr. Trash Wheel dataset gives observations for `r colnames(mrtrash_df)`. In this way, trash collection data are given in total weight (tons) and total volume (cubic yards), as well as weight collected per trash type. These data are presented alongside monthly total inches of rainfall data, which is important because trash is more likely to overflow into the Baltimore harbor after heavy rain. Precipitation data are provided for all `r count(rain_2018)` months in 2018, in which the average total monthly rainfall was `r mean(pull(rain_2018, total_precip))` inches, and `r count(rain_2019)` months in 2019, in which the average total monthly rainfall was `r mean(pull(rain_2019, total_precip))` inches. The cumulative total rainfall in 2019 was `r sum(pull(rain_2019, total_precip))`, and that in 2018 was `r sum(pull(rain_2018, total_precip))`.
+
+On Mr. Trash Wheel's biggest trash pickup day, he collected `r max(pull(mrtrash_df, "weight_tons"))` tons of trash. On Mr. Trash Wheel's least productive day, he only collected `r min(pull(mrtrash_df, "weight_tons"))` tons of trash. The median tons of sports balls Mr. Trash Wheel collected in 2019 was `r median(pull(mrtrash_df, "sports_balls"))`. In collecting all this trash, Mr. Trash Wheel is not only cleaning up the harbor, but also using that waste to generate electricity! On Mr. Trash Wheel's best day, he powered `r max(pull(mrtrash_df, "homes_powered"))` houses.
+
+NOT DONE YET
+
 
 # Problem 2: FiveThirtyEight
 
@@ -108,7 +113,18 @@ babyname_df = read_csv("data/Popular_Baby_Names.csv") %>%
   distinct(.keep_all = TRUE) %>% 
   mutate(ethnicity = str_to_lower(ethnicity)) %>% 
   mutate(gender = str_to_lower(gender)) %>% 
-  mutate(childs_first_name = str_to_lower(childs_first_name))
+  mutate(childs_first_name = str_to_lower(childs_first_name)) %>% 
+  mutate(ethnicity = ("asian and paci" = "asian and pacific islander"))
+
+```
+
+```{r olivia plot}
+
+olivia_df = babyname_df %>% 
+  filter(childs_first_name == "olivia") %>% 
+  pivot_wider(names_from = year_of_birth, values_from = count)
+  
+  
 
 ```
 
