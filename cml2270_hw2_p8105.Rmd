@@ -61,9 +61,6 @@ The Mr. Trash Wheel dataset provides information on how much trash the Mr. Trash
 
 On Mr. Trash Wheel's biggest trash pickup day, he collected `r max(pull(mrtrash_df, "weight_tons"))` tons of trash. On Mr. Trash Wheel's least productive day, he only collected `r min(pull(mrtrash_df, "weight_tons"))` tons of trash. The median tons of sports balls Mr. Trash Wheel collected in 2019 was `r median(pull(mrtrash_df, "sports_balls"))`. In collecting all this trash, Mr. Trash Wheel is not only cleaning up the harbor, but also using that waste to generate electricity! On Mr. Trash Wheel's best day, he powered `r max(pull(mrtrash_df, "homes_powered"))` houses.
 
-NOT DONE YET
-
-
 # Problem 2: FiveThirtyEight
 
 ```{r import pols_month and snp data}
@@ -82,8 +79,7 @@ snp_df = read_csv("data/fivethirtyeight_datasets/snp.csv") %>%
   mutate(year = ifelse(68 > year %% 100 & 16 > year %% 100, 2000 + year %% 100, 1900 + year %% 100)) %>%
   mutate(month = month.name[as.numeric(month)]) %>% 
   select(-day) %>% 
-  relocate(year) %>% 
-  rename(snp_close = close)
+  relocate(year)
 ```
 
 ```{r tidying unemployment data}
@@ -104,6 +100,13 @@ unemp_pols_snp_join = inner_join(snp_df, pols_df, by = c("year", "month")) %>%
 
 ```
 
+## Describing the FiveThirtyEight Data
+
+The three Five Thirty Eight datasets show the change over time in politics, as measured by the balance of elected officials in the democrat and republican parties and the strength of the economy, via the closing value of the S&P 500 index and the unemployment rate. The politics dataset has `r nrow(pols_df)` rows and `r ncol(pols_df)` columns, the unemployment dataset has `r nrow(unemploy_df)` rows and `r ncol(unemploy_df)` columns, and the S&P 500 dataset has `r nrow(snp_df)` rows and `r ncol(snp_df)` columns.
+
+The unemployment dataset gives unemployment rates from `r min(pull(unemploy_df, "year"))` to `r max(pull(unemploy_df, "year"))`, the S&P 500 dataset gives the closing value of the stock index from `r min(pull(snp_df, "year"))` to `r max(pull(snp_df, "year"))`, and lastly the politics dataset gives how many senators, governors, and representatives were democrats vs republicans, as well as whether the president was republican or democrat, from `r min(pull(pols_df, "year"))` to `r max(pull(pols_df, "year"))`. 
+
+
 # Problem 3: Baby Names
 
 ```{r import and tidy babynames}
@@ -114,17 +117,34 @@ babyname_df = read_csv("data/Popular_Baby_Names.csv") %>%
   mutate(ethnicity = str_to_lower(ethnicity)) %>% 
   mutate(gender = str_to_lower(gender)) %>% 
   mutate(childs_first_name = str_to_lower(childs_first_name)) %>% 
-  mutate(ethnicity = ("asian and paci" = "asian and pacific islander"))
-
+  mutate(ethnicity = recode(ethnicity, `asian and paci` = "asian and pacific islander", `black non hisp` = "black non hispanic", `white non hisp` = "white non hispanic"))
+  
 ```
 
 ```{r olivia plot}
 
 olivia_df = babyname_df %>% 
   filter(childs_first_name == "olivia") %>% 
+  select(-gender) %>%  
   pivot_wider(names_from = year_of_birth, values_from = count)
   
-  
+knitr::kable(olivia_df)
+print(olivia_df)
 
+```
+
+```{r most popular boy names}
+
+boys_df = babyname_df %>% 
+  filter(gender == "male", rank == "1") %>% 
+  pivot_wider(names_from = year_of_birth, values_from = childs_first_name) %>% 
+  select(-gender)
+
+```
+
+```{r}
+boys_subset_df = babyname_df %>% 
+  filter(gender == "male", ethnicity == "white non hispanic", year_of_birth == "2016")
+ggplot(boys_subset_df, aes(x = rank, y = count)) + geom_point() + ylab("Number of Children With Name") + xlab("Popularity Rank of Name")
 ```
 
